@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Web Page</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="This is my web page">
+    <meta name="chatbot amazon" content="Chatbot">
+    <link rel="stylesheet" href="styles/style.css">
+    <title>Amazon</title>
+</head>
+    <body>
+        <header>
+            <h1></h1>
+            <nav class="flex-container">
+                <img src="styles/imgs/logo.png" alt="" class="logo">
+                <ul class="flex-container links">
+                    <li><a href="#">Inicio</a></li>
+                    <li><a href="#">Sobre nosotros</a></li>
+                    <li><a href="#">Ayuda</a></li>
+                </ul>
+            </nav>
+        </header>
+        
+        <main>
+            <section id="about-us">
+                <h2>Sobre nosotros</h2>
+                <p>I am a web developer with a passion for coding.</p>
+            </section>
+            
+            <section id="contact">
+                <h2>Contactanos</h2>
+                <p>You can reach me at example@example.com</p>
+            </section>
+
+            <section id="help" class="flex-container">
+                <h2>Chatbot</h2>
+                <div class="flex-container" id="bot">
+                    <div class="flex-container" id="screen">
+                        <p class="font" id="message">Hola</p>
+                    </div>
+                    <div class="flex-container" id="buttons-container">
+                        <button type="button" id="start-button" class="button interact">Iniciar</button>
+                    </div>
+                    <div class="flex-container" id="buttons-accept">
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer>
+            <p>&copy; 2022 My Web Page. All rights reserved.</p>
+        </footer>
+        <script type="module" src="script/main.js"></script>
+        <script type="module" src="script/steps.js"></script>
+    </body>
+</html>
