@@ -214,6 +214,7 @@ function readGeneralMenu(option){
                 productTracking();
                 break;
             case "7":
+                sellerContact();
                 break;
             default:
                 break;
