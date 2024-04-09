@@ -1,7 +1,7 @@
-//import { askPersonalData } from "./steps";
 var nameValue;
 var mailValue;
 var orderNum;
+var cellphone;
 
 //Start of the chatbot
 
@@ -202,12 +202,16 @@ function readGeneralMenu(option){
                 refundNotReceived();
                 break;
             case "3":
+                productNotExpected();
                 break;
             case "4":
+                cancelOrderMenu();
                 break;
             case "5":
+                productRating();
                 break;
             case "6":
+                productTracking();
                 break;
             case "7":
                 break;
@@ -241,6 +245,7 @@ function readProductNotReceived(option){
                 notReceivedCaseOne();
                 break;
             case "3":
+                notReceivedCaseThree();
                 break;
             case "4":
                 generalMenu();
@@ -256,7 +261,7 @@ function readProductNotReceived(option){
     function notReceivedCaseOne(){
         removeAllButtons("buttons-container");
         addBttnOptions(4);
-        addBttnOptionsEvents(readProductNotReceived)
+        addBttnOptionsEvents(readNotReceivedCaseOne)
         const message = document.getElementById("message");
         const messageText = `1. Solicitar reembolso<br>
                             2. Seguir esperando(Se le enviará un mensaje al vendedor)<br>
@@ -265,11 +270,83 @@ function readProductNotReceived(option){
         message.innerHTML = `${messageText}`;
     }
 
+    function readNotReceivedCaseOne(option){
+        return function(){
+            switch(option){
+                case "1":
+                    askForCellphone();
+                    break;
+                case "2":
+                    waitProduct();
+                    break;
+                case "3":
+                    productNotReceived();
+                    break;
+                case "4":
+                    generalMenu();
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+            // 1.1.1|2.1.1 Case (1.1.1|2.1.1) Request reimbursement
+
+    function askForCellphone(){
+        removeAllButtons("buttons-container");
+        const message = document.getElementById("message");
+        const buttonContainer = document.getElementById("buttons-container");
+        const buttonsContainerAccept = document.getElementById("buttons-accept");
+        message.innerHTML = `${nameValue}, Digita tu número de celular, por favor.`;
+        message.style.opacity = "1";
+        const inputCellphone = createElementInput("text", "cellphone");
+        const labelCellphone = createElementLabel("cellphone", "Número de celular");
+        const buttonAccept = createElementButton("Aceptar");
+        buttonContainer.appendChild(labelCellphone);
+        buttonContainer.appendChild(inputCellphone);
+        buttonsContainerAccept.appendChild(buttonAccept);
+        buttonAccept.addEventListener("click", checkNum(inputCellphone, "Por favor, introduce un número de celular válido",giveMessage, 10));
+    }
+
+    function giveMessage(){
+        cellphone = getValue("cellphone");
+        removeAllButtons("buttons-accept");
+        removeAllButtons("buttons-container");
+        const message = document.getElementById("message");
+        const buttonContainer = document.getElementById("buttons-container");
+        message.innerHTML = `${nameValue}, En pocos minutos un asesor se comunicara con usted al número ${cellphone}, gracias por su espera`;
+        message.style.opacity = "1";
+        const buttonComeBack = createElementButton("Volver al menú principal");
+        buttonComeBack.addEventListener("click", generalMenu);
+        buttonContainer.appendChild(buttonComeBack);
+    }    
+
+            // 1.1.1|2.1. Case (1.1.1|2.1) Wait for product
+    
+    function waitProduct(){
+        removeAllButtons("buttons-container");
+        removeAllButtons("buttons-accept");
+        const message = document.getElementById("message");
+        message.innerHTML = `${nameValue}, se está enviando un mensaje al vendedor para que se comunique con usted, espere por favor...`;
+        message.style.opacity = "1";
+        setTimeout(waitProductResponse, 5000);
+    }
+
+    function waitProductResponse(){
+        const message = document.getElementById("message");
+        const buttonContainer = document.getElementById("buttons-container");
+        message.innerHTML = `El mensaje ha sido enviado`;
+        const buttonComeBack = createElementButton("Volver al menú principal");
+        buttonComeBack.addEventListener("click", generalMenu);
+        buttonContainer.appendChild(buttonComeBack);
+    }    
+
         // 1.3. Case (1.3)  Order canceled by seller NOT FINISH
     function notReceivedCaseThree(){
         removeAllButtons("buttons-container");
         addBttnOptions(4);
-        addBttnOptionsEvents(readProductNotReceived)
+        addBttnOptionsEvents(readNotReceivedCaseThree);
         const message = document.getElementById("message");
         const messageText = `1. Solicitar compensación<br>
                             2. Preguntar por la causa<br>
@@ -278,7 +355,50 @@ function readProductNotReceived(option){
         message.innerHTML = `${messageText}`;
     }
 
-    // 2. Case (2) Refund not received NOT FINISH
+    function readNotReceivedCaseThree(option){
+        return function(){
+            switch(option){
+                case "1":
+                    askForCellphone();
+                    break;
+                case "2":
+                    giveReason();
+                    break;
+                case "3":
+                    productNotReceived();
+                    break;
+                case "4":
+                    generalMenu();
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+            // 1.3.1 Case (1.3.1) Give reason for cancelation
+    
+    function generateReason(){
+        const reasons = [`Error en la dirección o información del destinatario`,`Productos no disponibles o agotados`,`Problemas de pago`,
+                        `Condiciones climáticas adversas`,`Problemas en la calidad del producto`];
+        const random = Math.floor(Math.random() * reasons.length);
+        return reasons[random];
+    }
+
+    function giveReason(){
+        removeAllButtons("buttons-accept");
+        removeAllButtons("buttons-container");
+        const message = document.getElementById("message");
+        let reason = generateReason();
+        let buttonContainer = document.getElementById("buttons-container");
+        message.innerHTML = `${nameValue}, La razón de la cancelación de su pedido es: ${reason}`;
+        message.style.opacity = "1";
+        const buttonComeBack = createElementButton("Volver al menú principal");
+        buttonComeBack.addEventListener("click", generalMenu);
+        buttonContainer.appendChild(buttonComeBack);
+    }
+
+    // 2. Case (2) Refund not received
     function refundNotReceived(){
         removeAllButtons("buttons-container");
         addBttnOptions(3);
@@ -294,8 +414,10 @@ function readProductNotReceived(option){
         return function(){
             switch(option){
                 case "1":
+                    askForCellphone();
                     break;
                 case "2":
+                    askForCellphone();
                     break;
                 case "3":
                     generalMenu();
@@ -323,8 +445,10 @@ function readProductNotReceived(option){
         return function(){
             switch(option){
                 case "1":
+                    productNotExpectedCases();
                     break;
                 case "2":
+                    productNotExpectedCases();
                     break;
                 case "3":
                     generalMenu();
@@ -333,11 +457,45 @@ function readProductNotReceived(option){
                     break;
             }
         }
+    }  
+    
+    function productNotExpectedCases(){
+        removeAllButtons("buttons-container");
+        addBttnOptions(5);
+        addBttnOptionsEvents(readProductNotExpectedCases)
+        const message = document.getElementById("message");
+        const messageText = `1. Solicitar reembolso<br>
+                            2. Solicitar compensación<br>
+                            3. Solicitar cambio de producto<br>
+                            4. Volver al menú anterior<br>
+                            5. Volver al menú principal`
+        message.innerHTML = `${messageText}`;
     }
 
-    //4. Case (4) Cancel order NOT FINISH
+    function readProductNotExpectedCases(option){
+        return function(){
+            switch(option){
+                case "1":
+                    askForCellphone();
+                    break;
+                case "2":
+                    askForCellphone();
+                    break;
+                case "3":
+                    askForCellphone();
+                    break;
+                case "4":
+                    productNotExpected();
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
 
-    function cancelOrder(){
+    //4. Case (4) Cancel order
+
+    function cancelOrderMenu(){
         removeAllButtons("buttons-container");
         addBttnOptions(3);
         addBttnOptionsEvents(readCancelOrder)
@@ -352,8 +510,10 @@ function readProductNotReceived(option){
         return function(){
             switch(option){
                 case "1":
+                    cancelOrder();
                     break;
                 case "2":
+                    cancelOrder();
                     break;
                 case "3":
                     generalMenu();
@@ -364,7 +524,40 @@ function readProductNotReceived(option){
         }
     }
 
-    //5. Case (5) Product rating NOT FINISH
+    function cancelOrder(){
+        removeAllButtons("buttons-container");
+        const message = document.getElementById("message");
+        const messageText = `${nameValue}, ¿Esta seguro de que desea cancelar el producto de su orden #${orderNum}?<br>`
+        message.innerHTML = `${messageText}`;
+        const buttonContainer = document.getElementById("buttons-container");
+        const buttonYes = createElementButton("Si");
+        const buttonNo = createElementButton("No");
+        buttonYes.addEventListener("click", isButtonYes(true));
+        buttonNo.addEventListener("click", isButtonYes(false));
+        buttonContainer.appendChild(buttonYes);
+        buttonContainer.appendChild(buttonNo);
+    }
+
+    function isButtonYes(condition){
+        return function(){
+            removeAllButtons("buttons-container");
+            const message = document.getElementById("message");
+            let messageText;
+            if(condition){
+                messageText = `El producto #${orderNum} ha sido cancelado con éxito`
+            }
+            else{
+                messageText = `Producto no cancelado`
+            }
+            message.innerHTML = `${messageText}`;
+            let buttonContainer = document.getElementById("buttons-container");
+            const buttonComeBack = createElementButton("Volver al menú principal");
+            buttonComeBack.addEventListener("click", generalMenu);
+            buttonContainer.appendChild(buttonComeBack);
+        }
+    }
+
+    //5. Case (5) Product rating
 
     function productRating(){
         removeAllButtons("buttons-container");
@@ -381,8 +574,10 @@ function readProductNotReceived(option){
         return function(){
             switch(option){
                 case "1":
+                    rateProduct();
                     break;
                 case "2":
+                    rateSeller();
                     break;
                 case "3":
                     generalMenu();
@@ -390,6 +585,46 @@ function readProductNotReceived(option){
                 default:
                     break;
             }
+        }
+    }
+
+    function rateProduct(){
+        removeAllButtons("buttons-container");
+        addBttnOptions(5);
+        addBttnOptionsEvents(responseRating)
+        const message = document.getElementById("message");
+        const messageText = `Del 1 al 5 ¿Cómo calificaría el producto #${orderNum}?<br>`
+        message.innerHTML = `${messageText}`;
+    }
+
+    function rateSeller(){
+        removeAllButtons("buttons-container");
+        addBttnOptions(5);
+        addBttnOptionsEvents(responseRating)
+        const message = document.getElementById("message");
+        const messageText = `Del 1 al 5 ¿Cómo calificaría el vendedor del producto #${orderNum}?<br>`
+        message.innerHTML = `${messageText}`;
+    }
+
+    function responseRating(rateNum){
+        return function(){
+            removeAllButtons("buttons-container");
+            const message = document.getElementById("message");
+            let messageText;
+            if(rateNum <= 2){
+                messageText = `Gracias por su calificación, lamentamos que no haya sido de su agrado`
+            }
+            else if(rateNum > 2 && rateNum <= 4){
+                messageText = `Gracias por su calificación, trabajaremos para mejorar`
+            }
+            else{
+                messageText = `Gracias por su calificación, nos alegra que haya quedado satisfecho`
+            }
+            message.innerHTML = `${messageText}`;
+            let buttonContainer = document.getElementById("buttons-container");
+            const buttonComeBack = createElementButton("Volver al menú principal");
+            buttonComeBack.addEventListener("click", generalMenu);
+            buttonContainer.appendChild(buttonComeBack);
         }
     }
 
@@ -409,6 +644,7 @@ function readProductNotReceived(option){
         return function(){
             switch(option){
                 case "1":
+                    trackingOrder();
                     break;
                 case "2":
                     generalMenu();
@@ -419,10 +655,33 @@ function readProductNotReceived(option){
         }
     }
 
+    function trackingOrder(){
+        removeAllButtons("buttons-container");
+        const message = document.getElementById("message");
+        const messageText = `Se está rastreando su producto...`;
+        message.innerHTML = `${messageText}`;
+        setTimeout(()=> message.innerHTML = `El estado del producto ${orderNum} es: <strong>En camino</strong>.<br>
+            Gracias por su compra`, 5000)
+        let buttonContainer = document.getElementById("buttons-container");
+        const buttonComeBack = createElementButton("Volver al menú principal");
+        buttonComeBack.addEventListener("click", generalMenu);
+        buttonContainer.appendChild(buttonComeBack);
+    }
+
     //7. Case (7) Seller contact NOT FINISH
 
     function sellerContact(){
-        
+        removeAllButtons("buttons-container");
+        const message = document.getElementById("message");
+        const messageText = `El contacto del vendedor del producto #${orderNum} es: <br>
+                            Nombre: Juan Pérez<br>
+                            Teléfono: 300 123 4567<br>
+                            Correo: juanp@gmail.com`
+        message.innerHTML = `${messageText}`;
+        let buttonContainer = document.getElementById("buttons-container");
+        const buttonComeBack = createElementButton("Volver al menú principal");
+        buttonComeBack.addEventListener("click", generalMenu);
+        buttonContainer.appendChild(buttonComeBack);
     }
 
 document.getElementById("start-button").addEventListener("click", start);
