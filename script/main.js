@@ -1,7 +1,4 @@
-var nameValue;
-var mailValue;
-var orderNum;
-var cellphone;
+const personalValues = [];
 
 //Start of the chatbot
 
@@ -80,10 +77,41 @@ function checkNum(input, alertMessage, step, validLength){
 }
 
 function getValue(inputId){
-    const value = document.getElementById(inputId).value;
+    let value = document.getElementById(inputId).value;
     return value;
 }
 
+function containerTextTransitionOn(isOn){
+    const message = document.getElementById("container-message");
+    if(isOn) message.style.opacity = "1";
+    else message.style.opacity = "0";
+}
+
+function putDelayVariable(funcName, delay, variable){
+    return function(){
+        personalValues.push(getValue(variable));
+        removeAllButtons("buttons-container");
+        removeAllButtons("buttons-accept");
+        containerTextTransitionOn(false);
+        setTimeout(funcName, delay);
+    }
+}
+
+function putDelay(funcName, delay){
+    removeAllButtons("buttons-container");
+    removeAllButtons("buttons-accept");
+    containerTextTransitionOn(false);
+    setTimeout(funcName, delay);
+}
+
+function putDelayButtons(funcName, delay){
+    return function(){
+        removeAllButtons("buttons-container");
+        removeAllButtons("buttons-accept");
+        containerTextTransitionOn(false);
+        setTimeout(funcName, delay);
+    }
+}
 //Chatbot steps
 // 1. Ask for personal data
 
@@ -92,67 +120,51 @@ function askName(){
     const buttonContainer = document.getElementById("buttons-container");
     const buttonsContainerAccept = document.getElementById("buttons-accept");
     message.innerHTML = "Hola<br>¿Cuál es tu nombre?";
-    message.style.opacity = "1";
+    containerTextTransitionOn(true);
     const inputName = createElementInput("text", "name");
-    const labelName = createElementLabel("name", "Nombre");
     const buttonAccept = createElementButton("Aceptar");
-    buttonContainer.appendChild(labelName);
     buttonContainer.appendChild(inputName);
     buttonsContainerAccept.appendChild(buttonAccept);
-    buttonAccept.addEventListener("click", checkText(inputName, "Por favor, introduce un nombre",askMail));
+    buttonAccept.addEventListener("click", checkText(inputName, "Por favor, introduce un nombre",putDelayVariable(askMail, 1000, "name")));
 }
 
 function askMail(){
-    nameValue = getValue("name");
-    removeAllButtons("buttons-container");
-    removeAllButtons("buttons-accept");
+    containerTextTransitionOn(true);
     const message = document.getElementById("message");
     const buttonContainer = document.getElementById("buttons-container");
     const buttonsContainerAccept = document.getElementById("buttons-accept");
-    message.innerHTML = `${nameValue}, Digita tu correo electrónico, por favor.`;
-    message.style.opacity = "1";
+    message.innerHTML = `${personalValues[0]}, Digita tu correo electrónico, por favor.`;
     const inputMail = createElementInput("email", "email");
-    const labelMail = createElementLabel("email", "Correo electrónico");
     const buttonAccept = createElementButton("Aceptar");
-    buttonContainer.appendChild(labelMail);
     buttonContainer.appendChild(inputMail);
     buttonsContainerAccept.appendChild(buttonAccept);
-    buttonAccept.addEventListener("click", checkMail(inputMail, "Por favor, introduce un correo válido",askId));
+    buttonAccept.addEventListener("click", checkMail(inputMail, "Por favor, introduce un correo válido",putDelayVariable(askId, 1000, "email")));
 }
 
 function askId(){
-    mailValue = getValue("email");
-    removeAllButtons("buttons-container");
-    removeAllButtons("buttons-accept");
+    containerTextTransitionOn(true);
     const message = document.getElementById("message");
     const buttonContainer = document.getElementById("buttons-container");
     const buttonsContainerAccept = document.getElementById("buttons-accept");
-    message.innerHTML = `${nameValue}, Digita tu número de identificación, por favor.`;
-    message.style.opacity = "1";
+    message.innerHTML = `${personalValues[0]}, Digita tu número de identificación, por favor.`;
     const inputId = createElementInput("text", "id");
-    const labelId = createElementLabel("id", "Número de identificación");
     const buttonAccept = createElementButton("Aceptar");
-    buttonContainer.appendChild(labelId);
     buttonContainer.appendChild(inputId);
     buttonsContainerAccept.appendChild(buttonAccept);
-    buttonAccept.addEventListener("click", checkNum(inputId, "Por favor, introduce un número de identificación válido",askOrderNum, 1));
+    buttonAccept.addEventListener("click", checkNum(inputId, "Por favor, introduce un número de identificación válido",putDelayVariable(askOrderNum, 1000, "id"), 1));
 }
 
 function askOrderNum(){
-    removeAllButtons("buttons-container");
-    removeAllButtons("buttons-accept");
+    containerTextTransitionOn(true);
     const message = document.getElementById("message");
     const buttonContainer = document.getElementById("buttons-container");
     const buttonsContainerAccept = document.getElementById("buttons-accept");
-    message.innerHTML = `${nameValue}, Digita el número de orden, por favor.<br>(5 digitos)`;
-    message.style.opacity = "1";
+    message.innerHTML = `${personalValues[0]}, Digita el número de orden, por favor.<br>(5+ digitos)`;
     const inputOrderNum = createElementInput("text", "orderNum");
-    const labelOrderNum = createElementLabel("orderNum", "Número de orden");
     const buttonAccept = createElementButton("Aceptar");
-    buttonContainer.appendChild(labelOrderNum);
     buttonContainer.appendChild(inputOrderNum);
     buttonsContainerAccept.appendChild(buttonAccept);
-    buttonAccept.addEventListener("click", checkNum(inputOrderNum, "Por favor, introduce un número de orden válido",generalMenu, 5));
+    buttonAccept.addEventListener("click", checkNum(inputOrderNum, "Por favor, introduce un número de orden válido",putDelayVariable(generalMenu, 1000, "orderNum"), 5));
 }
 
 // Case General Menu
@@ -172,12 +184,13 @@ function addBttnOptionsEvents(functionName){
     for(let i = 0; i < buttons.length; i++){
         buttons[i].addEventListener("click", functionName(funcNames[i]));
     }                     
+    if(buttons.length >= 5){
+        buttons[3].style.marginRight = "0";
+    }
 }
 
 function generalMenu(){
-    orderNum = typeof(orderNum) === 'undefined' ? getValue("orderNum") : orderNum;
-    removeAllButtons("buttons-container");
-    removeAllButtons("buttons-accept");
+    containerTextTransitionOn(true);
     const message = document.getElementById("message");
     const messageText = `1. No recibí mi producto<br>
                         2. No recibí reembolso<br>
@@ -187,7 +200,6 @@ function generalMenu(){
                         6. Seguimiento producto<br>
                         7. Contacto del vendedor`
     message.innerHTML = `${messageText}`;
-    message.style.opacity = "1";
     addBttnOptions(7);
     addBttnOptionsEvents(readGeneralMenu);
 }
@@ -196,25 +208,25 @@ function readGeneralMenu(option){
     return function(){
         switch(option){
             case "1":
-                productNotReceived();
+                putDelay(productNotReceived, 1000);
                 break;
             case "2":
-                refundNotReceived();
+                putDelay(refundNotReceived, 1000);
                 break;
             case "3":
-                productNotExpected();
+                putDelay(productNotExpected, 1000);
                 break;
             case "4":
-                cancelOrderMenu();
+                putDelay(cancelOrderMenu, 1000);
                 break;
             case "5":
-                productRating();
+                putDelay(productRating, 1000);
                 break;
             case "6":
-                productTracking();
+                putDelay(productTracking, 1000);
                 break;
             case "7":
-                sellerContact();
+                putDelay(sellerContact, 1000);
                 break;
             default:
                 break;
@@ -225,7 +237,7 @@ function readGeneralMenu(option){
     // 1. Case (1) Product not received
 
 function productNotReceived(){
-    removeAllButtons("buttons-container");
+    containerTextTransitionOn(true);
     addBttnOptions(4);
     addBttnOptionsEvents(readProductNotReceived)
     const message = document.getElementById("message");
@@ -240,16 +252,16 @@ function readProductNotReceived(option){
     return function(){
         switch(option){
             case "1":
-                notReceivedCaseOne();
+                putDelay(notReceivedCaseOne, 1000);
                 break;
             case "2":
-                notReceivedCaseOne();
+                putDelay(notReceivedCaseOne, 1000);
                 break;
             case "3":
-                notReceivedCaseThree();
+                putDelay(notReceivedCaseThree, 1000);
                 break;
             case "4":
-                generalMenu();
+                putDelay(generalMenu, 1000);
                 break;
             default:
                 break;
@@ -260,7 +272,7 @@ function readProductNotReceived(option){
         // 1.1|2. Case (1.1|2) Limit date reach or not received product NOT FINISH
 
     function notReceivedCaseOne(){
-        removeAllButtons("buttons-container");
+        containerTextTransitionOn(true);
         addBttnOptions(4);
         addBttnOptionsEvents(readNotReceivedCaseOne)
         const message = document.getElementById("message");
@@ -275,16 +287,16 @@ function readProductNotReceived(option){
         return function(){
             switch(option){
                 case "1":
-                    askForCellphone();
+                    putDelay(askForCellphone, 1000);
                     break;
                 case "2":
-                    waitProduct();
+                    putDelay(waitProduct, 1000);
                     break;
                 case "3":
-                    productNotReceived();
+                    putDelay(productNotReceived, 1000);
                     break;
                 case "4":
-                    generalMenu();
+                    putDelay(generalMenu, 1000);
                     break;
                 default:
                     break;
@@ -295,57 +307,50 @@ function readProductNotReceived(option){
             // 1.1.1|2.1.1 Case (1.1.1|2.1.1) Request reimbursement
 
     function askForCellphone(){
-        removeAllButtons("buttons-container");
+        containerTextTransitionOn(true);
         const message = document.getElementById("message");
         const buttonContainer = document.getElementById("buttons-container");
         const buttonsContainerAccept = document.getElementById("buttons-accept");
-        message.innerHTML = `${nameValue}, Digita tu número de celular, por favor.`;
-        message.style.opacity = "1";
+        message.innerHTML = `${personalValues[0]}, Digita tu número de celular, por favor.`;
         const inputCellphone = createElementInput("text", "cellphone");
-        const labelCellphone = createElementLabel("cellphone", "Número de celular");
         const buttonAccept = createElementButton("Aceptar");
-        buttonContainer.appendChild(labelCellphone);
         buttonContainer.appendChild(inputCellphone);
         buttonsContainerAccept.appendChild(buttonAccept);
-        buttonAccept.addEventListener("click", checkNum(inputCellphone, "Por favor, introduce un número de celular válido",giveMessage, 10));
+        buttonAccept.addEventListener("click", checkNum(inputCellphone, "Por favor, introduce un número de celular válido",putDelayVariable(giveMessage, 1000, "cellphone"), 10));
     }
-
+    
     function giveMessage(){
-        cellphone = getValue("cellphone");
-        removeAllButtons("buttons-accept");
-        removeAllButtons("buttons-container");
+        containerTextTransitionOn(true);
         const message = document.getElementById("message");
         const buttonContainer = document.getElementById("buttons-container");
-        message.innerHTML = `${nameValue}, En pocos minutos un asesor se comunicara con usted al número ${cellphone}, gracias por su espera`;
-        message.style.opacity = "1";
+        message.innerHTML = `${personalValues[0]}, En pocos minutos un asesor se comunicara con usted al número ${personalValues[4]}, gracias por su espera`;
         const buttonComeBack = createElementButton("Volver al menú principal");
-        buttonComeBack.addEventListener("click", generalMenu);
         buttonContainer.appendChild(buttonComeBack);
+        buttonComeBack.addEventListener("click", putDelayButtons(generalMenu, 1000));
     }    
 
             // 1.1.1|2.1. Case (1.1.1|2.1) Wait for product
     
     function waitProduct(){
-        removeAllButtons("buttons-container");
-        removeAllButtons("buttons-accept");
+        containerTextTransitionOn(true);
         const message = document.getElementById("message");
-        message.innerHTML = `${nameValue}, se está enviando un mensaje al vendedor para que se comunique con usted, espere por favor...`;
-        message.style.opacity = "1";
+        message.innerHTML = `${personalValues[0]}, se está enviando un mensaje al vendedor para que se comunique con usted, espere por favor...`;
         setTimeout(waitProductResponse, 5000);
     }
 
     function waitProductResponse(){
+        containerTextTransitionOn(true);
         const message = document.getElementById("message");
         const buttonContainer = document.getElementById("buttons-container");
         message.innerHTML = `El mensaje ha sido enviado`;
         const buttonComeBack = createElementButton("Volver al menú principal");
-        buttonComeBack.addEventListener("click", generalMenu);
+        buttonComeBack.addEventListener("click", putDelayButtons(generalMenu, 1000));
         buttonContainer.appendChild(buttonComeBack);
     }    
 
         // 1.3. Case (1.3)  Order canceled by seller NOT FINISH
     function notReceivedCaseThree(){
-        removeAllButtons("buttons-container");
+        containerTextTransitionOn(true);
         addBttnOptions(4);
         addBttnOptionsEvents(readNotReceivedCaseThree);
         const message = document.getElementById("message");
@@ -360,16 +365,16 @@ function readProductNotReceived(option){
         return function(){
             switch(option){
                 case "1":
-                    askForCellphone();
+                    putDelay(askForCellphone,1000);
                     break;
                 case "2":
-                    giveReason();
+                    putDelay(giveReason,1000);
                     break;
                 case "3":
-                    productNotReceived();
+                    putDelay(productNotReceived,1000);
                     break;
                 case "4":
-                    generalMenu();
+                    putDelay(generalMenu,1000);
                     break;
                 default:
                     break;
@@ -387,21 +392,19 @@ function readProductNotReceived(option){
     }
 
     function giveReason(){
-        removeAllButtons("buttons-accept");
-        removeAllButtons("buttons-container");
+        containerTextTransitionOn(true);
         const message = document.getElementById("message");
         let reason = generateReason();
         let buttonContainer = document.getElementById("buttons-container");
         message.innerHTML = `${nameValue}, La razón de la cancelación de su pedido es: ${reason}`;
-        message.style.opacity = "1";
         const buttonComeBack = createElementButton("Volver al menú principal");
-        buttonComeBack.addEventListener("click", generalMenu);
+        buttonComeBack.addEventListener("click", putDelayButtons(generalMenu, 1000));
         buttonContainer.appendChild(buttonComeBack);
     }
 
     // 2. Case (2) Refund not received
     function refundNotReceived(){
-        removeAllButtons("buttons-container");
+        containerTextTransitionOn(true);
         addBttnOptions(3);
         addBttnOptionsEvents(readRefundNotReceived)
         const message = document.getElementById("message");
@@ -415,13 +418,13 @@ function readProductNotReceived(option){
         return function(){
             switch(option){
                 case "1":
-                    askForCellphone();
+                    putDelay(askForCellphone, 1000);
                     break;
                 case "2":
-                    askForCellphone();
+                    putDelay(askForCellphone, 1000);
                     break;
                 case "3":
-                    generalMenu();
+                    putDelay(generalMenu, 1000);
                     break;
                 default:
                     break;
@@ -432,7 +435,7 @@ function readProductNotReceived(option){
     //3. Case (3) Product not what I expected NOT FINISH
 
     function productNotExpected(){
-        removeAllButtons("buttons-container");
+        containerTextTransitionOn(true);
         addBttnOptions(3);
         addBttnOptionsEvents(readProductNotExpected)
         const message = document.getElementById("message");
@@ -446,13 +449,13 @@ function readProductNotReceived(option){
         return function(){
             switch(option){
                 case "1":
-                    productNotExpectedCases();
+                    putDelay(productNotExpectedCases, 1000);
                     break;
                 case "2":
-                    productNotExpectedCases();
+                    putDelay(productNotExpectedCases, 1000);
                     break;
                 case "3":
-                    generalMenu();
+                    putDelay(generalMenu, 1000);
                     break;
                 default:
                     break;
@@ -461,7 +464,7 @@ function readProductNotReceived(option){
     }  
     
     function productNotExpectedCases(){
-        removeAllButtons("buttons-container");
+        containerTextTransitionOn(true);
         addBttnOptions(5);
         addBttnOptionsEvents(readProductNotExpectedCases)
         const message = document.getElementById("message");
@@ -477,16 +480,16 @@ function readProductNotReceived(option){
         return function(){
             switch(option){
                 case "1":
-                    askForCellphone();
+                    putDelay(askForCellphone, 1000);
                     break;
                 case "2":
-                    askForCellphone();
+                    putDelay(askForCellphone, 1000);
                     break;
                 case "3":
-                    askForCellphone();
+                    putDelay(askForCellphone, 1000);
                     break;
                 case "4":
-                    productNotExpected();
+                    putDelay(productNotExpected, 1000);
                     break;
                 default:
                     break;
@@ -497,7 +500,7 @@ function readProductNotReceived(option){
     //4. Case (4) Cancel order
 
     function cancelOrderMenu(){
-        removeAllButtons("buttons-container");
+        containerTextTransitionOn(true);
         addBttnOptions(3);
         addBttnOptionsEvents(readCancelOrder)
         const message = document.getElementById("message");
@@ -511,13 +514,13 @@ function readProductNotReceived(option){
         return function(){
             switch(option){
                 case "1":
-                    cancelOrder();
+                    putDelay(cancelOrder, 1000);
                     break;
                 case "2":
-                    cancelOrder();
+                    putDelay(cancelOrder, 1000);
                     break;
                 case "3":
-                    generalMenu();
+                    putDelay(generalMenu, 1000);
                     break;
                 default:
                     break;
@@ -526,26 +529,26 @@ function readProductNotReceived(option){
     }
 
     function cancelOrder(){
-        removeAllButtons("buttons-container");
+        containerTextTransitionOn(true);
         const message = document.getElementById("message");
-        const messageText = `${nameValue}, ¿Esta seguro de que desea cancelar el producto de su orden #${orderNum}?<br>`
+        const messageText = `${personalValues[0]}, ¿Esta seguro de que desea cancelar el producto de su orden #${personalValues[3]}?<br>`
         message.innerHTML = `${messageText}`;
         const buttonContainer = document.getElementById("buttons-container");
         const buttonYes = createElementButton("Si");
         const buttonNo = createElementButton("No");
-        buttonYes.addEventListener("click", isButtonYes(true));
-        buttonNo.addEventListener("click", isButtonYes(false));
+        buttonYes.addEventListener("click", putDelay(isButtonYes(true), 1000));
+        buttonNo.addEventListener("click", putDelay(isButtonYes(false), 1000));
         buttonContainer.appendChild(buttonYes);
         buttonContainer.appendChild(buttonNo);
     }
 
     function isButtonYes(condition){
         return function(){
-            removeAllButtons("buttons-container");
+            containerTextTransitionOn(true);
             const message = document.getElementById("message");
             let messageText;
             if(condition){
-                messageText = `El producto #${orderNum} ha sido cancelado con éxito`
+                messageText = `El producto #${personalValues[3]} ha sido cancelado con éxito`
             }
             else{
                 messageText = `Producto no cancelado`
@@ -553,7 +556,7 @@ function readProductNotReceived(option){
             message.innerHTML = `${messageText}`;
             let buttonContainer = document.getElementById("buttons-container");
             const buttonComeBack = createElementButton("Volver al menú principal");
-            buttonComeBack.addEventListener("click", generalMenu);
+            buttonComeBack.addEventListener("click", putDelayButtons(generalMenu, 1000));
             buttonContainer.appendChild(buttonComeBack);
         }
     }
@@ -561,7 +564,7 @@ function readProductNotReceived(option){
     //5. Case (5) Product rating
 
     function productRating(){
-        removeAllButtons("buttons-container");
+        containerTextTransitionOn(true);
         addBttnOptions(3);
         addBttnOptionsEvents(readProductRating)
         const message = document.getElementById("message");
@@ -575,13 +578,13 @@ function readProductNotReceived(option){
         return function(){
             switch(option){
                 case "1":
-                    rateProduct();
+                    putDelay(rateProduct, 1000);
                     break;
                 case "2":
-                    rateSeller();
+                    putDelay(rateSeller, 1000);
                     break;
                 case "3":
-                    generalMenu();
+                    putDelay(generalMenu, 1000);
                     break;
                 default:
                     break;
@@ -590,26 +593,26 @@ function readProductNotReceived(option){
     }
 
     function rateProduct(){
-        removeAllButtons("buttons-container");
+        containerTextTransitionOn(true);
         addBttnOptions(5);
         addBttnOptionsEvents(responseRating)
         const message = document.getElementById("message");
-        const messageText = `Del 1 al 5 ¿Cómo calificaría el producto #${orderNum}?<br>`
+        const messageText = `Del 1 al 5 ¿Cómo calificaría el producto #${personalValues[3]}?<br>`
         message.innerHTML = `${messageText}`;
     }
 
     function rateSeller(){
-        removeAllButtons("buttons-container");
+        containerTextTransitionOn(true);
         addBttnOptions(5);
         addBttnOptionsEvents(responseRating)
         const message = document.getElementById("message");
-        const messageText = `Del 1 al 5 ¿Cómo calificaría el vendedor del producto #${orderNum}?<br>`
+        const messageText = `Del 1 al 5 ¿Cómo calificaría el vendedor del producto #${personalValues[3]}?<br>`
         message.innerHTML = `${messageText}`;
     }
 
     function responseRating(rateNum){
         return function(){
-            removeAllButtons("buttons-container");
+            containerTextTransitionOn(true);
             const message = document.getElementById("message");
             let messageText;
             if(rateNum <= 2){
@@ -624,7 +627,7 @@ function readProductNotReceived(option){
             message.innerHTML = `${messageText}`;
             let buttonContainer = document.getElementById("buttons-container");
             const buttonComeBack = createElementButton("Volver al menú principal");
-            buttonComeBack.addEventListener("click", generalMenu);
+            buttonComeBack.addEventListener("click", putDelayButtons(generalMenu, 1000));
             buttonContainer.appendChild(buttonComeBack);
         }
     }
@@ -645,10 +648,10 @@ function readProductNotReceived(option){
         return function(){
             switch(option){
                 case "1":
-                    trackingOrder();
+                    putDelay(trackingOrder, 1000);
                     break;
                 case "2":
-                    generalMenu();
+                    putDelay(generalMenu, 1000);
                     break;
                 default:
                     break;
@@ -657,31 +660,31 @@ function readProductNotReceived(option){
     }
 
     function trackingOrder(){
-        removeAllButtons("buttons-container");
+        containerTextTransitionOn(true);
         const message = document.getElementById("message");
         const messageText = `Se está rastreando su producto...`;
         message.innerHTML = `${messageText}`;
-        setTimeout(()=> message.innerHTML = `El estado del producto ${orderNum} es: <strong>En camino</strong>.<br>
+        setTimeout(()=> message.innerHTML = `El estado del producto ${personalValues[3]} es: <strong>En camino</strong>.<br>
             Gracias por su compra`, 5000)
         let buttonContainer = document.getElementById("buttons-container");
         const buttonComeBack = createElementButton("Volver al menú principal");
-        buttonComeBack.addEventListener("click", generalMenu);
+        buttonComeBack.addEventListener("click", putDelayButtons(generalMenu, 1000));
         buttonContainer.appendChild(buttonComeBack);
     }
 
     //7. Case (7) Seller contact NOT FINISH
 
     function sellerContact(){
-        removeAllButtons("buttons-container");
+        containerTextTransitionOn(true);
         const message = document.getElementById("message");
-        const messageText = `El contacto del vendedor del producto #${orderNum} es: <br>
+        const messageText = `El contacto del vendedor del producto #${personalValues[3]} es: <br>
                             Nombre: Juan Pérez<br>
                             Teléfono: 300 123 4567<br>
                             Correo: juanp@gmail.com`
         message.innerHTML = `${messageText}`;
         let buttonContainer = document.getElementById("buttons-container");
         const buttonComeBack = createElementButton("Volver al menú principal");
-        buttonComeBack.addEventListener("click", generalMenu);
+        buttonComeBack.addEventListener("click", putDelayButtons(generalMenu, 1000));
         buttonContainer.appendChild(buttonComeBack);
     }
 
