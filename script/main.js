@@ -536,8 +536,8 @@ function readProductNotReceived(option){
         const buttonContainer = document.getElementById("buttons-container");
         const buttonYes = createElementButton("Si");
         const buttonNo = createElementButton("No");
-        buttonYes.addEventListener("click", putDelay(isButtonYes(true), 1000));
-        buttonNo.addEventListener("click", putDelay(isButtonYes(false), 1000));
+        buttonYes.addEventListener("click", putDelayButtons(isButtonYes(true), 1000));
+        buttonNo.addEventListener("click", putDelayButtons(isButtonYes(false), 1000));
         buttonContainer.appendChild(buttonYes);
         buttonContainer.appendChild(buttonNo);
     }
