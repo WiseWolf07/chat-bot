@@ -140,6 +140,10 @@ input{
     margin-right: 15px;
 }
 
+#buttons-container .button:first-child{
+    margin-left: 15px;
+}
+
 .labels{
     padding: 10px 0px;
     margin-right: 5px;

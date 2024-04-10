@@ -184,9 +184,6 @@ function addBttnOptionsEvents(functionName){
     for(let i = 0; i < buttons.length; i++){
         buttons[i].addEventListener("click", functionName(funcNames[i]));
     }                     
-    if(buttons.length >= 5){
-        buttons[3].style.marginRight = "0";
-    }
 }
 
 function generalMenu(){
@@ -322,7 +319,7 @@ function readProductNotReceived(option){
     function giveMessage(){
         containerTextTransitionOn(true);
         const message = document.getElementById("message");
-        const buttonContainer = document.getElementById("buttons-container");
+        const buttonContainer = document.getElementById("buttons-accept");
         message.innerHTML = `${personalValues[0]}, En pocos minutos un asesor se comunicara con usted al número ${personalValues[personalValues.length - 1]}, gracias por su espera`;
         const buttonComeBack = createElementButton("Volver al menú principal");
         buttonContainer.appendChild(buttonComeBack);
@@ -341,7 +338,7 @@ function readProductNotReceived(option){
     function waitProductResponse(){
         containerTextTransitionOn(true);
         const message = document.getElementById("message");
-        const buttonContainer = document.getElementById("buttons-container");
+        const buttonContainer = document.getElementById("buttons-accept");
         message.innerHTML = `El mensaje ha sido enviado`;
         const buttonComeBack = createElementButton("Volver al menú principal");
         buttonComeBack.addEventListener("click", putDelayButtons(generalMenu, 1000));
@@ -395,7 +392,7 @@ function readProductNotReceived(option){
         containerTextTransitionOn(true);
         const message = document.getElementById("message");
         let reason = generateReason();
-        let buttonContainer = document.getElementById("buttons-container");
+        let buttonContainer = document.getElementById("buttons-accept");
         message.innerHTML = `${nameValue}, La razón de la cancelación de su pedido es: ${reason}`;
         const buttonComeBack = createElementButton("Volver al menú principal");
         buttonComeBack.addEventListener("click", putDelayButtons(generalMenu, 1000));
@@ -533,7 +530,7 @@ function readProductNotReceived(option){
         const message = document.getElementById("message");
         const messageText = `${personalValues[0]}, ¿Esta seguro de que desea cancelar el producto de su orden #${personalValues[3]}?<br>`
         message.innerHTML = `${messageText}`;
-        const buttonContainer = document.getElementById("buttons-container");
+        const buttonContainer = document.getElementById("buttons-accept");
         const buttonYes = createElementButton("Si");
         const buttonNo = createElementButton("No");
         buttonYes.addEventListener("click", putDelayButtons(isButtonYes(true), 1000));
@@ -554,7 +551,7 @@ function readProductNotReceived(option){
                 messageText = `Producto no cancelado`
             }
             message.innerHTML = `${messageText}`;
-            let buttonContainer = document.getElementById("buttons-container");
+            let buttonContainer = document.getElementById("buttons-accept");
             const buttonComeBack = createElementButton("Volver al menú principal");
             buttonComeBack.addEventListener("click", putDelayButtons(generalMenu, 1000));
             buttonContainer.appendChild(buttonComeBack);
@@ -612,6 +609,8 @@ function readProductNotReceived(option){
 
     function responseRating(rateNum){
         return function(){
+            removeAllButtons("buttons-container");
+            removeAllButtons("buttons-accept");
             containerTextTransitionOn(true);
             const message = document.getElementById("message");
             let messageText;
@@ -625,17 +624,17 @@ function readProductNotReceived(option){
                 messageText = `Gracias por su calificación, nos alegra que haya quedado satisfecho`
             }
             message.innerHTML = `${messageText}`;
-            let buttonContainer = document.getElementById("buttons-container");
+            let buttonContainer = document.getElementById("buttons-accept");
             const buttonComeBack = createElementButton("Volver al menú principal");
-            buttonComeBack.addEventListener("click", putDelayButtons(generalMenu, 1000));
             buttonContainer.appendChild(buttonComeBack);
+            buttonComeBack.addEventListener("click", putDelayButtons(generalMenu, 1000));
         }
     }
 
     //6. Case (6) Product tracking NOT FINISH
 
     function productTracking(){
-        removeAllButtons("buttons-container");
+        containerTextTransitionOn(true);
         addBttnOptions(2);
         addBttnOptionsEvents(readProductTracking)
         const message = document.getElementById("message");
@@ -666,7 +665,7 @@ function readProductNotReceived(option){
         message.innerHTML = `${messageText}`;
         setTimeout(()=> message.innerHTML = `El estado del producto ${personalValues[3]} es: <strong>En camino</strong>.<br>
             Gracias por su compra`, 5000)
-        let buttonContainer = document.getElementById("buttons-container");
+        let buttonContainer = document.getElementById("buttons-accept");
         const buttonComeBack = createElementButton("Volver al menú principal");
         buttonComeBack.addEventListener("click", putDelayButtons(generalMenu, 1000));
         buttonContainer.appendChild(buttonComeBack);
@@ -682,7 +681,7 @@ function readProductNotReceived(option){
                             Teléfono: 300 123 4567<br>
                             Correo: juanp@gmail.com`
         message.innerHTML = `${messageText}`;
-        let buttonContainer = document.getElementById("buttons-container");
+        let buttonContainer = document.getElementById("buttons-accept");
         const buttonComeBack = createElementButton("Volver al menú principal");
         buttonComeBack.addEventListener("click", putDelayButtons(generalMenu, 1000));
         buttonContainer.appendChild(buttonComeBack);
