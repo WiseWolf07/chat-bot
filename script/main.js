@@ -323,7 +323,7 @@ function readProductNotReceived(option){
         containerTextTransitionOn(true);
         const message = document.getElementById("message");
         const buttonContainer = document.getElementById("buttons-container");
-        message.innerHTML = `${personalValues[0]}, En pocos minutos un asesor se comunicara con usted al número ${personalValues[4]}, gracias por su espera`;
+        message.innerHTML = `${personalValues[0]}, En pocos minutos un asesor se comunicara con usted al número ${personalValues[personalValues.length - 1]}, gracias por su espera`;
         const buttonComeBack = createElementButton("Volver al menú principal");
         buttonContainer.appendChild(buttonComeBack);
         buttonComeBack.addEventListener("click", putDelayButtons(generalMenu, 1000));
